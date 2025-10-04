@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
-import Message from "../models/message.model.js";
+import Message from "../models/Message.js";
 import { socketAuthMiddleware } from "../middleware/socket.auth.middleware.js";
 import dotenv from "dotenv";
 dotenv.config();
