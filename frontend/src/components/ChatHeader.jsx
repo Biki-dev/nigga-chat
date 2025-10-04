@@ -20,7 +20,7 @@ function ChatHeader() {
   }, [setSelectedUser]);
 
   return (
-    <div className="flex justify-between items-center bg-[var(--secondary-bg)] border-b border-[var(--border-primary)] px-6 py-4">
+    <div className="hidden lg:flex justify-between items-center bg-[var(--secondary-bg)] border-b border-[var(--border-primary)] px-6 py-4">
       <div className="flex items-center space-x-3">
         <div className={`avatar ${isOnline ? "online" : "offline"}`}>
           <div className="w-12 h-12 rounded-full overflow-hidden">
