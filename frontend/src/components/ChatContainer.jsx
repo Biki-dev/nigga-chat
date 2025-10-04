@@ -39,7 +39,7 @@ function ChatContainer() {
   return (
     <>
       <ChatHeader />
-      <div className="flex-1 px-4 overflow-y-auto py-4 bg-[var(--primary-bg)]">
+      <div className="flex-1 px-2 sm:px-4 overflow-y-auto py-4 bg-[var(--primary-bg)]">
         {messages.length > 0 && !isMessagesLoading ? (
           <div className="max-w-4xl mx-auto space-y-1">
             {messages.map((msg, index) => {
@@ -50,34 +50,33 @@ function ChatContainer() {
               return (
                 <div
                   key={msg._id}
-                  className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} items-end gap-2.5 slide-in-right`}
+                  className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} items-end gap-2 sm:gap-2.5 slide-in-right`}
                 >
                   {/* Avatar for received messages */}
                   {!isOwnMessage && showAvatar && (
-                    <div className=" flex-shrink-0">
-                    <img
-  src={selectedUser.profilePic || "/avatar.png"}
-  alt={selectedUser.fullName}
-  className="size-8 rounded-full object-cover"
-/>
-
+                    <div className="flex-shrink-0">
+                      <img
+                        src={selectedUser.profilePic || "/avatar.png"}
+                        alt={selectedUser.fullName}
+                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
+                      />
                     </div>
                   )}
                   
                   {/* Spacer for received messages without avatar */}
-                  {!isOwnMessage && !showAvatar && <div className="w-6 ml-2" />}
+                  {!isOwnMessage && !showAvatar && <div className="w-4 sm:w-6 ml-1 sm:ml-2" />}
                   
                   {/* Message bubble */}
                   <div
-                    className={`relative max-w-xs mb-1 ml-2 lg:max-w-md ${
-                      isOwnMessage ? 'message-sent' : 'message-received'
-                    }`}
+                    className={`relative max-w-[85%] sm:max-w-xs lg:max-w-md mb-1 ${
+                      isOwnMessage ? 'ml-1 sm:ml-2' : 'ml-1 sm:ml-2'
+                    } ${isOwnMessage ? 'message-sent' : 'message-received'}`}
                   >
                     {msg.image && (
                       <img 
                         src={msg.image} 
                         alt="Shared" 
-                        className="rounded-lg h-40 w-full object-cover mb-2" 
+                        className="rounded-lg h-32 sm:h-40 w-full object-cover mb-2" 
                       />
                     )}
                     {msg.text && (
