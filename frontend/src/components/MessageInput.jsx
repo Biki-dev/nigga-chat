@@ -45,18 +45,18 @@ function MessageInput() {
   };
 
   return (
-    <div className="p-4 border-t border-slate-700/50">
+    <div className="p-4 border-t border-[var(--border-primary)] bg-[var(--secondary-bg)]">
       {imagePreview && (
-        <div className="max-w-3xl mx-auto mb-3 flex items-center">
+        <div className="max-w-4xl mx-auto mb-3 flex items-center">
           <div className="relative">
             <img
               src={imagePreview}
               alt="Preview"
-              className="w-20 h-20 object-cover rounded-lg border border-slate-700"
+              className="w-20 h-20 object-cover rounded-lg border border-[var(--border-primary)]"
             />
             <button
               onClick={removeImage}
-              className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-slate-200 hover:bg-slate-700"
+              className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[var(--tertiary-bg)] flex items-center justify-center text-[var(--primary-text)] hover:bg-[var(--quaternary-bg)] transition-colors"
               type="button"
             >
               <XIcon className="w-4 h-4" />
@@ -65,17 +65,19 @@ function MessageInput() {
         </div>
       )}
 
-      <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto flex space-x-4">
-        <input
-          type="text"
-          value={text}
-          onChange={(e) => {
-            setText(e.target.value);
-            isSoundEnabled && playRandomKeyStrokeSound();
-          }}
-          className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-lg py-2 px-4"
-          placeholder="Type your message..."
-        />
+      <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto flex gap-3">
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            value={text}
+            onChange={(e) => {
+              setText(e.target.value);
+              isSoundEnabled && playRandomKeyStrokeSound();
+            }}
+            className="w-full bg-[var(--tertiary-bg)] border border-[var(--border-primary)] rounded-full py-3 px-4 pr-12 text-[var(--primary-text)] placeholder-[var(--tertiary-text)] focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-transparent transition-all duration-200"
+            placeholder="Type a message..."
+          />
+        </div>
 
         <input
           type="file"
@@ -88,16 +90,19 @@ function MessageInput() {
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className={`bg-slate-800/50 text-slate-400 hover:text-slate-200 rounded-lg px-4 transition-colors ${
-            imagePreview ? "text-cyan-500" : ""
+          className={`btn-secondary p-3 transition-colors ${
+            imagePreview ? "text-[var(--accent-primary)]" : ""
           }`}
+          title="Attach image"
         >
           <ImageIcon className="w-5 h-5" />
         </button>
+        
         <button
           type="submit"
           disabled={!text.trim() && !imagePreview}
-          className="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg px-4 py-2 font-medium hover:from-cyan-600 hover:to-cyan-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-primary p-3 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+          title="Send message"
         >
           <SendIcon className="w-5 h-5" />
         </button>

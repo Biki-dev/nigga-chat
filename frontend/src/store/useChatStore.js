@@ -104,10 +104,39 @@ export const useChatStore = create((set, get) => ({
         notificationSound.play().catch((e) => console.log("Audio play failed:", e));
       }
     });
+
+    // Listen for unread count updates
+    socket.on("unreadCountUpdate", ({ senderId, unreadCount }) => {
+      const { chats } = get();
+      const updatedChats = chats.map(chat => 
+        chat._id === senderId 
+          ? { ...chat, unreadCount }
+          : chat
+      );
+      set({ chats: updatedChats });
+    });
   },
 
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
     socket.off("newMessage");
+    socket.off("unreadCountUpdate");
+  },
+
+  markMessagesAsRead: async (senderId) => {
+    try {
+      await axiosInstance.put(`/messages/mark-read/${senderId}`);
+      
+      // Update local state to remove unread count
+      const { chats } = get();
+      const updatedChats = chats.map(chat => 
+        chat._id === senderId 
+          ? { ...chat, unreadCount: 0 }
+          : chat
+      );
+      set({ chats: updatedChats });
+    } catch (error) {
+      console.log("Error marking messages as read:", error);
+    }
   },
 }));

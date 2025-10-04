@@ -11,7 +11,12 @@ router.post("/logout", logout);
 router.put("/update-profile", protectRoute, updateProfile);
 
 router.get("/check", protectRoute, (req, res) => {
-    res.status(200).json({ message: "Authorized" })
+    res.status(200).json({
+        _id: req.user._id,
+        fullName: req.user.fullName,
+        email: req.user.email,
+        profilePic: req.user.profilePic,
+    });
 });
 
 // Add this route to get current user's profile
