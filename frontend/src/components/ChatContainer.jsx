@@ -14,6 +14,7 @@ function ChatContainer() {
     isMessagesLoading,
     subscribeToMessages,
     unsubscribeFromMessages,
+    markMessagesAsRead,
   } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
@@ -21,10 +22,13 @@ function ChatContainer() {
   useEffect(() => {
     getMessagesByUserId(selectedUser._id);
     subscribeToMessages();
+    
+    // Mark messages as read when chat is opened
+    markMessagesAsRead(selectedUser._id);
 
     // clean up
     return () => unsubscribeFromMessages();
-  }, [selectedUser, getMessagesByUserId, subscribeToMessages, unsubscribeFromMessages]);
+  }, [selectedUser, getMessagesByUserId, subscribeToMessages, unsubscribeFromMessages, markMessagesAsRead]);
 
   useEffect(() => {
     if (messageEndRef.current) {
@@ -35,34 +39,64 @@ function ChatContainer() {
   return (
     <>
       <ChatHeader />
-      <div className="flex-1 px-6 overflow-y-auto py-8">
+      <div className="flex-1 px-4 overflow-y-auto py-4 bg-[var(--primary-bg)]">
         {messages.length > 0 && !isMessagesLoading ? (
-          <div className="max-w-3xl mx-auto space-y-6">
-            {messages.map((msg) => (
-              <div
-                key={msg._id}
-                className={`chat ${msg.senderId === authUser._id ? "chat-end" : "chat-start"}`}
-              >
+          <div className="max-w-4xl mx-auto space-y-1">
+            {messages.map((msg, index) => {
+              const isOwnMessage = msg.senderId === authUser._id;
+              const prevMessage = messages[index - 1];
+              const showAvatar = !prevMessage || prevMessage.senderId !== msg.senderId;
+              
+              return (
                 <div
-                  className={`chat-bubble relative ${
-                    msg.senderId === authUser._id
-                      ? "bg-cyan-600 text-white"
-                      : "bg-slate-800 text-slate-200"
-                  }`}
+                  key={msg._id}
+                  className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} items-end gap-2.5 slide-in-right`}
                 >
-                  {msg.image && (
-                    <img src={msg.image} alt="Shared" className="rounded-lg h-48 object-cover" />
+                  {/* Avatar for received messages */}
+                  {!isOwnMessage && showAvatar && (
+                    <div className=" flex-shrink-0">
+                    <img
+  src={selectedUser.profilePic || "/avatar.png"}
+  alt={selectedUser.fullName}
+  className="size-8 rounded-full object-cover"
+/>
+
+                    </div>
                   )}
-                  {msg.text && <p className="mt-2">{msg.text}</p>}
-                  <p className="text-xs mt-1 opacity-75 flex items-center gap-1">
-                    {new Date(msg.createdAt).toLocaleTimeString(undefined, {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
+                  
+                  {/* Spacer for received messages without avatar */}
+                  {!isOwnMessage && !showAvatar && <div className="w-6 ml-2" />}
+                  
+                  {/* Message bubble */}
+                  <div
+                    className={`relative max-w-xs mb-1 ml-2 lg:max-w-md ${
+                      isOwnMessage ? 'message-sent' : 'message-received'
+                    }`}
+                  >
+                    {msg.image && (
+                      <img 
+                        src={msg.image} 
+                        alt="Shared" 
+                        className="rounded-lg h-40 w-full object-cover mb-2" 
+                      />
+                    )}
+                    {msg.text && (
+                      <p className="text-sm leading-relaxed break-words">
+                        {msg.text}
+                      </p>
+                    )}
+                    <p className={`text-xs mt-1 flex items-center gap-1 ${
+                      isOwnMessage ? 'text-white/70' : 'text-[var(--tertiary-text)]'
+                    }`}>
+                      {new Date(msg.createdAt).toLocaleTimeString(undefined, {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {/* 👇 scroll target */}
             <div ref={messageEndRef} />
           </div>

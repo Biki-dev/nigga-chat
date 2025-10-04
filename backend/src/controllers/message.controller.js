@@ -67,6 +67,19 @@ export const sendMessage = async (req, res) => {
             io.to(receiverSocketId).emit("newMessage", newMessage);
         }
 
+        // Emit unread count update to receiver
+        if (receiverSocketId) {
+            const unreadCount = await Message.countDocuments({
+                senderId: senderId,
+                receiverId: receiverId,
+                isRead: false
+            });
+            io.to(receiverSocketId).emit("unreadCountUpdate", {
+                senderId: senderId,
+                unreadCount: unreadCount
+            });
+        }
+
         res.status(201).json(newMessage);
     } catch (error) {
         console.log("Error in sendMessage controller: ", error.message);
@@ -91,7 +104,46 @@ export const getChatPartners = async (req, res) => {
 
         const chatPartners = await User.find({ _id: { $in: chatPartnersIds } }).select("-password");
 
-        res.status(200).json(chatPartners); 
+        // Add unread count for each chat partner
+        const chatPartnersWithUnreadCount = await Promise.all(
+            chatPartners.map(async (partner) => {
+                const unreadCount = await Message.countDocuments({
+                    senderId: partner._id,
+                    receiverId: loggedInUserId,
+                    isRead: false
+                });
+                
+                return {
+                    ...partner.toObject(),
+                    unreadCount
+                };
+            })
+        );
+
+        res.status(200).json(chatPartnersWithUnreadCount); 
+    } catch (error) {
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+export const markMessagesAsRead = async (req, res) => {
+    try {
+        const loggedInUserId = req.user._id;
+        const { senderId } = req.params;
+
+        // Mark all messages from this sender as read
+        await Message.updateMany(
+            {
+                senderId: senderId,
+                receiverId: loggedInUserId,
+                isRead: false
+            },
+            {
+                isRead: true
+            }
+        );
+
+        res.status(200).json({ message: "Messages marked as read" });
     } catch (error) {
         res.status(500).json({ message: "Server Error" });
     }
