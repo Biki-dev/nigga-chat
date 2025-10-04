@@ -101,7 +101,9 @@ export const updateProfile = async (req, res) => {
         }
         const userId = req.user._id;
 
-        await cloudinary.uploader.destroy(req.user.public_id);
+        if (req.user.public_id) {
+            await cloudinary.uploader.destroy(req.user.public_id);
+        }
 
         const uploadResponse = await cloudinary.uploader.upload(profilePic, {
             folder: "profile_pics",
