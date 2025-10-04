@@ -4,7 +4,12 @@ import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 import { useChatStore } from "./useChatStore";
 
-const BASE_URL = import.meta.env.MODE === "development" ? "https://nigga-chat.onrender.com" : "/";
+// Use VITE_API_URL for both development and production
+const BASE_URL =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:4000"          // local backend for dev
+    : import.meta.env.VITE_API_URL;    // Render backend in production
+
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
