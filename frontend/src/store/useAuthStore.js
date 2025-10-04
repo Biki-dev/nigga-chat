@@ -5,11 +5,7 @@ import { io } from "socket.io-client";
 import { useChatStore } from "./useChatStore";
 
 // Use VITE_API_URL for both development and production
-const BASE_URL =
-  import.meta.env.MODE === "development"
-    ? "http://localhost:4000"          // local backend for dev
-    : import.meta.env.VITE_API_URL;    // Render backend in production
-
+const BASE_URL = "https://nigga-chat.onrender.com";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
