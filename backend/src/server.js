@@ -15,6 +15,18 @@ app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+app.use(
+  session({
+    secret: process.env.JWT_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: true, // true for HTTPS
+      sameSite: "none", // important for cross-site cookies
+      httpOnly: true,
+    },
+  })
+);
 
 
 app.use(cookieParser());
