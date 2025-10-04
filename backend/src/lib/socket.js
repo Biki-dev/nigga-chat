@@ -38,6 +38,29 @@ io.on("connection", (socket) => {
   // Send unread count updates to the user who just came online
   socket.emit("refreshUnreadCounts");
 
+  socket.on("sendMessage", async ({ toUserId, content }) => {
+  try {
+    // Save message to DB (adjust your model)
+    const message = await Message.create({
+      sender: socket.userId,
+      receiver: toUserId,
+      content,
+    });
+
+    // Send to the recipient if online
+    const receiverSocketId = userSocketMap[toUserId];
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("receiveMessage", message);
+    }
+
+    // Optionally send ack to sender
+    socket.emit("messageSent", message);
+  } catch (err) {
+    console.error("Error sending message:", err.message);
+  }
+});
+
+
   // with socket.on we listen for events from clients
   socket.on("disconnect", () => {
     console.log("A user disconnected", socket.user.fullName);

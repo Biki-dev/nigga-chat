@@ -99,6 +99,12 @@ export const useAuthStore = create((set, get) => ({
 
     set({ socket });
 
+    socket.on("receiveMessage", (message) => {
+  const { addMessage } = useChatStore.getState();
+  addMessage(message); // this should update your chat state
+});
+
+
     // listen for online users event
     socket.on("getOnlineUsers", (userIds) => {
       set({ onlineUsers: userIds });
