@@ -99,16 +99,17 @@ export const useAuthStore = create((set, get) => ({
 
     set({ socket });
 
-    socket.on("receiveMessage", (message) => {
+    socket.on("getOnlineUsers", (userIds) => {
+  set({ onlineUsers: userIds }); // include everyone
+});
+
+socket.on("receiveMessage", (message) => {
   const { addMessage } = useChatStore.getState();
-  addMessage(message); // this should update your chat state
+  addMessage(message); // make sure it updates the correct chat
 });
 
 
-    // listen for online users event
-    socket.on("getOnlineUsers", (userIds) => {
-      set({ onlineUsers: userIds });
-    });
+
 
     // listen for refresh unread counts event
     socket.on("refreshUnreadCounts", () => {
