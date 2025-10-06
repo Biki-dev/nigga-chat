@@ -15,7 +15,7 @@ function App() {
     checkAuth();
   }, [checkAuth]);
 
-  if (isCheckingAuth) return <PageLoader />;
+
 
   return (
     <ThemeProvider>
